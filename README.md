@@ -30,6 +30,9 @@ This repository contains a production-grade design for:
 - Fargate chosen over EC2 for reduced operational overhead
 - SQL Server retained to avoid schema migration risk
 
+## CI/CD Status
+GitHub Actions pipeline successfully validates CI and deployment workflow (simulated).
+
 ## Future Improvements
 - Introduce Terraform for infrastructure as code
 - Add canary deployments
