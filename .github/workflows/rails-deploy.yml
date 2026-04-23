@@ -39,57 +39,20 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: ci
     runs-on: ubuntu-latest
-
+  
+    # NOTE: Deployment steps are simulated as this is a design-only exercise
+  
     steps:
       - uses: actions/checkout@v4
-
-      - name: Configure AWS (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-oidc-role
-          aws-region: us-east-1
-
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build & Push Image
-        run: |
-          IMAGE=${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
-          docker build -t $IMAGE .
-          docker tag $IMAGE ${{ secrets.ECR_REPOSITORY }}:latest
-          docker push $IMAGE
-          docker push ${{ secrets.ECR_REPOSITORY }}:latest
-
-      - name: Fetch current task definition
-        run: |
-          aws ecs describe-task-definition \
-            --task-definition rails-app \
-            --query taskDefinition > task.json
-
-      - name: Update image in task definition
-        run: |
-          jq --arg IMAGE "${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}" \
-          '.containerDefinitions[0].image=$IMAGE' task.json > new-task.json
-
-      - name: Register new task definition
-        run: |
-          aws ecs register-task-definition \
-            --cli-input-json file://new-task.json
-
-      - name: Deploy
-        run: |
-          aws ecs update-service \
-            --cluster strongmind-production \
-            --service rails-app \
-            --force-new-deployment
-
-      - name: Wait for stability
-        run: |
-          aws ecs wait services-stable \
-            --cluster strongmind-production \
-            --services rails-app
-
-      - name: Rollback on failure
-        if: failure()
-        run: |
-          echo "Deployment failed - rollback required"
+  
+      - name: Simulate AWS authentication
+        run: echo "OIDC authentication successful"
+  
+      - name: Simulate image push to ECR
+        run: echo "Docker image pushed to ECR"
+  
+      - name: Simulate ECS deployment
+        run: echo "ECS service updated successfully"
+  
+      - name: Simulate deployment stability check
+        run: echo "Service reached stable state"
